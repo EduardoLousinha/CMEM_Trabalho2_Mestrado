@@ -61,5 +61,6 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
+    implementation ("com.google.mlkit:barcode-scanning:17.0.3")
 
 }
