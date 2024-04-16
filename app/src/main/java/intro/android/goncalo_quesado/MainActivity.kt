@@ -53,10 +53,9 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         if (stepSensor == null) {
             // Caso o dispositivo não tenha um sensor de contagem de passos
             Log.e("MainActivity", "Sensor de contagem de passos não suportado")
-            // Aqui você pode lidar com a falta do sensor, por exemplo, informar ao usuário
         }
 
-        // Solicitar permissão ACTIVITY_RECOGNITION se ainda não estiver concedida
+        // Oermissão ACTIVITY_RECOGNITION
         if (ContextCompat.checkSelfPermission(this, activityRecognitionPermission) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(activityRecognitionPermission), permissionRequestCode)
         }
@@ -98,7 +97,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
     override fun onResume() {
         super.onResume()
-        // Registrar o listener do sensor de contagem de passos se a permissão estiver concedida
+        // listener do sensor se permissão for concedida
         if (isPermissionGranted(activityRecognitionPermission)) {
             stepSensor?.let {
                 sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_NORMAL)
@@ -108,7 +107,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
     override fun onPause() {
         super.onPause()
-        // Parar de escutar o sensor de contagem de passos quando a atividade estiver pausada
+        // Parar  o sensor de contagem de passos
         sensorManager.unregisterListener(this)
     }
 
@@ -121,29 +120,24 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-        // Handle accuracy changes if needed
         when (accuracy) {
             SensorManager.SENSOR_STATUS_UNRELIABLE -> {
                 Log.d("MainActivity", "Sensor accuracy changed to UNRELIABLE")
-                // Handle unreliable accuracy if necessary
             }
             SensorManager.SENSOR_STATUS_ACCURACY_LOW -> {
                 Log.d("MainActivity", "Sensor accuracy changed to LOW")
-                // Handle low accuracy if necessary
             }
             SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM -> {
                 Log.d("MainActivity", "Sensor accuracy changed to MEDIUM")
-                // Handle medium accuracy if necessary
             }
             SensorManager.SENSOR_STATUS_ACCURACY_HIGH -> {
                 Log.d("MainActivity", "Sensor accuracy changed to HIGH")
-                // Handle high accuracy if necessary
             }
         }
     }
 
     private fun updateStepCount(steps: Int) {
-        // Atualize a interface do usuário com o número atual de passos
+        // Atualizar passos
         val textViewStepCount = findViewById<TextView>(R.id.textViewStepCount)
         textViewStepCount.text = "Steps: $steps"
         Log.d("MainActivity", "Step count updated: $steps")
@@ -153,12 +147,8 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == permissionRequestCode) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permissão ACTIVITY_RECOGNITION concedida pelo usuário
-                // Iniciar a leitura do sensor de contagem de passos
                 onResume()
             } else {
-                // Permissão negada pelo usuário
-                // Lidar com a falta de permissão aqui, por exemplo, informar ao usuário
                 Log.e("MainActivity", "Permissão ACTIVITY_RECOGNITION negada")
             }
         }
