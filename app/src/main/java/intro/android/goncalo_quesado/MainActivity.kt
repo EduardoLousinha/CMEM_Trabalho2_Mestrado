@@ -1,6 +1,8 @@
 package intro.android.goncalo_quesado
 
+import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -13,6 +15,7 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.net.Uri
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -123,8 +126,13 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             barcodes.forEach { barcode ->
                 when (barcode.valueType) {
                     Barcode.TYPE_URL -> {
-                        binding.textViewQrType.text = "URL"
-                        binding.textViewQrContent.text = barcode.url?.url
+                        val url = barcode.url?.url
+                        if (!url.isNullOrBlank()) {
+                            // Handle URL by opening it
+                            openUrlInBrowser(url)
+                            binding.textViewQrType.text = "URL"
+                            binding.textViewQrContent.text = url
+                        }
                     }
                     Barcode.TYPE_CONTACT_INFO -> {
                         binding.textViewQrType.text = "Contact"
@@ -183,7 +191,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     private fun updateStepCount(steps: Int) {
         // Update step count and progress towards goal
         val textViewStepCount = findViewById<TextView>(R.id.textViewStepCount)
-        textViewStepCount.text = "Steps: $steps / $stepGoal "
+        textViewStepCount.text = "Steps: $steps / $stepGoal steps (goal)"
         Log.d("MainActivity", "Step count updated: $steps")
     }
 
@@ -195,6 +203,17 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             } else {
                 Log.e("MainActivity", "Permissão ACTIVITY_RECOGNITION negada")
             }
+        }
+    }
+
+    private fun openUrlInBrowser(url: String) {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        try {
+            startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            Log.e("MainActivity", "No activity found to handle URL intent")
+            // Handle case where no activity can handle the URL intent
+            // You can provide user feedback or fallback behavior here
         }
     }
 
