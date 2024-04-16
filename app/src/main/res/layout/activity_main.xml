@@ -8,7 +8,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="450dp"
+        android:layout_height="300dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
@@ -51,16 +51,32 @@
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/textViewStepCount"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/step_count_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Step Count: 0"
-        android:textSize="18sp"
-        android:layout_marginTop="32dp"
+        android:orientation="vertical"
+        android:padding="16dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/textViewStepCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Steps: 0"
+            android:textSize="18sp"/>
+
+        <!-- EditText for Daily Step Goal -->
+        <EditText
+            android:id="@+id/editTextStepGoal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Set Daily Step Goal"
+            android:inputType="number"/>
+    </LinearLayout>
 
     <Button
         android:id="@+id/button_open_scanner"
@@ -71,6 +87,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
 
 
 
