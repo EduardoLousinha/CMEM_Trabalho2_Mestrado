@@ -10,11 +10,8 @@ class IntroductionActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_introduction)
 
-        // Configurar a lógica para exibir as explicações
-        // Por exemplo, configurar um botão para continuar para a próxima tela
         val buttonContinue = findViewById<Button>(R.id.buttonContinue)
         buttonContinue.setOnClickListener {
-            // Abrir a próxima tela após clicar no botão
             openMainActivity()
         }
     }
@@ -22,6 +19,6 @@ class IntroductionActivity : AppCompatActivity() {
     private fun openMainActivity() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
-        finish() // Finalizar esta activity para não retornar à tela de introdução ao voltar
+        finish()
     }
 }

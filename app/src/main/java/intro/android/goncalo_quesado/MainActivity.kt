@@ -19,11 +19,10 @@ import android.net.Uri
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
+
 
 class MainActivity : AppCompatActivity(), SensorEventListener {
 
@@ -38,7 +37,6 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     private lateinit var sharedPreferences: SharedPreferences
     private val stepCountKey = "step_count"
     private val stepGoalKey = "step_goal"
-    private val lastResetDateKey = "last_reset_date"
 
     private val activityRecognitionPermission = android.Manifest.permission.ACTIVITY_RECOGNITION
     private val permissionRequestCode = 100
@@ -56,19 +54,17 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Initialize shared preferences
+        // Inicializar shared
         sharedPreferences = getSharedPreferences("step_tracker", Context.MODE_PRIVATE)
 
-        // Retrieve step count, step goal, and last reset date from shared preferences
+        // Vai buscar os valores guardados no shared
         stepCount = sharedPreferences.getInt(stepCountKey, 0)
         stepGoal = sharedPreferences.getInt(stepGoalKey, 0)
 
-        // Reset step count if it's a new day
-        resetStepCountIfNeeded()
 
-        // Update UI with current step count and step goal
+        // Update UI
         updateStepCount(stepCount)
-        binding.editTextStepGoal.setText(stepGoal.toString())
+
 
         // Botão para abrir o scanner
         binding.buttonOpenScanner.setOnClickListener {
@@ -101,8 +97,8 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
                 val newGoal = s.toString().toIntOrNull()
                 if (newGoal != null) {
                     stepGoal = newGoal
-                    saveStepGoal(stepGoal) // Save the updated goal to shared preferences
-                    updateStepCount(stepCount) // Update UI with the new goal
+                    saveStepGoal(stepGoal) // salva o goal no shared
+                    updateStepGoalUI()
                 }
             }
         })
@@ -128,7 +124,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
                     Barcode.TYPE_URL -> {
                         val url = barcode.url?.url
                         if (!url.isNullOrBlank()) {
-                            // Handle URL by opening it
+                            // Abrir o URL
                             openUrlInBrowser(url)
                             binding.textViewQrType.text = "URL"
                             binding.textViewQrContent.text = url
@@ -152,7 +148,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         // listener do sensor se permissão for concedida
         if (isPermissionGranted(activityRecognitionPermission)) {
             stepSensor?.let {
-                sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_FASTEST)
+                sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_NORMAL)
             }
         }
     }
@@ -165,7 +161,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
     override fun onSensorChanged(event: SensorEvent?) {
         if (event?.sensor?.type == Sensor.TYPE_STEP_COUNTER) {
-            // Update step count immediately when a sensor event is received
+            // Update do Sensor
             val newStepCount = event.values[0].toInt()
             updateStepCount(newStepCount)
         }
@@ -189,10 +185,52 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     }
 
     private fun updateStepCount(steps: Int) {
-        // Update step count and progress towards goal
+        stepCount = steps
         val textViewStepCount = findViewById<TextView>(R.id.textViewStepCount)
-        textViewStepCount.text = "Steps: $steps / $stepGoal steps (goal)"
-        Log.d("MainActivity", "Step count updated: $steps")
+        textViewStepCount.text = "Steps: $stepCount / $stepGoal steps (goal)"
+
+
+
+        // Atualizar a cor do texto com base na meta
+        if (stepCount >= stepGoal) {
+            textViewStepCount.setTextColor(ContextCompat.getColor(this, android.R.color.holo_green_dark))
+        } else {
+            textViewStepCount.setTextColor(ContextCompat.getColor(this, android.R.color.black))
+        }
+    }
+
+    private fun updateStepGoalUI() {
+        val textViewStepCount = findViewById<TextView>(R.id.textViewStepCount)
+        textViewStepCount.text = "Steps: $stepCount / $stepGoal steps (goal)"
+
+        val progressPercentage = (stepCount.toFloat() / stepGoal.toFloat()) * 100
+        val imageViewGoalStatus = findViewById<ImageView>(R.id.imageViewGoalStatus)
+
+        when {
+            progressPercentage >= 100 -> {
+                imageViewGoalStatus.setImageResource(R.drawable.done)
+            }
+            progressPercentage >= 75 -> {
+                imageViewGoalStatus.setImageResource(R.drawable.far_75)
+            }
+            progressPercentage >= 50 -> {
+                imageViewGoalStatus.setImageResource(R.drawable.far_50)
+            }
+            progressPercentage >= 25 -> {
+                imageViewGoalStatus.setImageResource(R.drawable.far_25)
+            }
+            progressPercentage >= 0 -> {
+                imageViewGoalStatus.setImageResource(R.drawable.far)
+            }
+        }
+
+
+        // Atualizar a cor do texto com base na meta
+        if (stepCount >= stepGoal) {
+            textViewStepCount.setTextColor(ContextCompat.getColor(this, android.R.color.holo_green_dark))
+        } else {
+            textViewStepCount.setTextColor(ContextCompat.getColor(this, android.R.color.black))
+        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -212,36 +250,9 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             startActivity(intent)
         } catch (e: ActivityNotFoundException) {
             Log.e("MainActivity", "No activity found to handle URL intent")
-            // Handle case where no activity can handle the URL intent
-            // You can provide user feedback or fallback behavior here
         }
     }
 
-    private fun resetStepCountIfNeeded() {
-        val today = Calendar.getInstance()
-        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val todayStr = sdf.format(today.time)
-
-        val lastResetDate = sharedPreferences.getString(lastResetDateKey, "")
-
-        if (lastResetDate != todayStr) {
-            // Reset step count for a new day
-            stepCount = 0
-            saveStepCount(stepCount)
-
-            // Update last reset date in shared preferences
-            with(sharedPreferences.edit()) {
-                putString(lastResetDateKey, todayStr)
-                apply()
-            }
-        }
-    }
-    private fun saveStepCount(count: Int) {
-        with(sharedPreferences.edit()) {
-            putInt(stepCountKey, count)
-            apply()
-        }
-    }
 
     private fun saveStepGoal(goal: Int) {
         with(sharedPreferences.edit()) {
