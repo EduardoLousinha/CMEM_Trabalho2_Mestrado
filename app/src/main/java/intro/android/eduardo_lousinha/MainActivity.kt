@@ -57,34 +57,26 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Inicializar shared
         sharedPreferences = getSharedPreferences("step_tracker", Context.MODE_PRIVATE)
 
-        // Vai buscar os valores guardados no shared
         stepCount = sharedPreferences.getInt(stepCountKey, 0)
         stepGoal = sharedPreferences.getInt(stepGoalKey, 0)
 
-
-        // Update UI
         updateStepCount(stepCount)
 
-
-        // Botão para abrir o scanner
-        binding.buttonOpenScanner.setOnClickListener {
+        binding.scannerButton.setOnClickListener {
             requestCameraPermission()
         }
 
-        // Inicializar o SensorManager
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
 
 
         if (stepSensor == null) {
-            // Caso o dispositivo não tenha um sensor de contagem de passos
-            Log.e("MainActivity", "Sensor de contagem de passos não suportado")
+
+            Log.e("MainActivity", "Step counting sensor not compatible")
         }
 
-        // Oermissão ACTIVITY_RECOGNITION
         if (ContextCompat.checkSelfPermission(this, activityRecognitionPermission) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(activityRecognitionPermission), permissionRequestCode)
         }
@@ -100,8 +92,8 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
                 val newGoal = s.toString().toIntOrNull()
                 if (newGoal != null) {
                     stepGoal = newGoal
-                    saveStepGoal(stepGoal) // salva o goal no shared
-                    updateStepGoalUI()
+                    saveStepGoal(stepGoal)
+                    updateStepCount(0)
                 }
             }
         })
@@ -131,7 +123,6 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
                     Barcode.TYPE_URL -> {
                         val url = barcode.url?.url
                         if (!url.isNullOrBlank()) {
-                            // Abrir o URL
                             openUrlInBrowser(url)
                             binding.textViewQrType.text = "URL"
                             binding.textViewQrContent.text = url
@@ -152,7 +143,6 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
     override fun onResume() {
         super.onResume()
-        // listener do sensor se permissão for concedida
         if (isPermissionGranted(activityRecognitionPermission)) {
             stepSensor?.let {
                 sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_NORMAL)
@@ -162,13 +152,11 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
     override fun onPause() {
         super.onPause()
-        // Parar  o sensor de contagem de passos
         sensorManager.unregisterListener(this)
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
         if (event?.sensor?.type == Sensor.TYPE_STEP_COUNTER) {
-            // Update do Sensor
             val newStepCount = event.values[0].toInt()
             updateStepCount(newStepCount)
         }
@@ -194,31 +182,12 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     private fun updateStepCount(steps: Int) {
         stepCount = steps
         val textViewStepCount = findViewById<TextView>(R.id.textViewStepCount)
-        textViewStepCount.text = "Steps: $stepCount / $stepGoal steps (goal)"
-
-        updateStepGoalUI()
-
-        // Atualizar a cor do texto com base na meta
-        if (stepCount >= stepGoal) {
-            textViewStepCount.setTextColor(ContextCompat.getColor(this, android.R.color.holo_green_dark))
-        } else {
-            textViewStepCount.setTextColor(ContextCompat.getColor(this, android.R.color.black))
-        }
-    }
-
-    private fun updateStepGoalUI() {
-        val textViewStepCount = findViewById<TextView>(R.id.textViewStepCount)
-        textViewStepCount.text = "Steps: $stepCount / $stepGoal steps (goal)"
-
-        val progressPercentage = (stepCount.toFloat() / stepGoal.toFloat()) * 100
         val textViewGoalStatus = findViewById<TextView>(R.id.textViewGoalStatus)
+        textViewStepCount.text = "Steps: $stepCount / $stepGoal steps (goal)"
 
         val progress = stepCount.toFloat() / stepGoal.toFloat() * 100
-
         textViewGoalStatus.text = "Progress: %.2f%%".format(progress)
 
-
-        // Atualizar a cor do texto com base na meta
         if (stepCount >= stepGoal) {
             textViewStepCount.setTextColor(ContextCompat.getColor(this, android.R.color.holo_green_dark))
         } else {
@@ -230,7 +199,6 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         stepCount = 0
         saveStepCount(stepCount)
         updateStepCount(stepCount)
-        updateStepGoalUI()
     }
 
     private fun saveStepCount(count: Int) {
@@ -245,7 +213,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 onResume()
             } else {
-                Log.e("MainActivity", "Permissão ACTIVITY_RECOGNITION negada")
+                Log.e("MainActivity", "Permission for ACTIVITY_RECOGNITION denied!")
             }
         }
     }

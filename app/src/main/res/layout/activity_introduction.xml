@@ -6,7 +6,7 @@
     android:background="@android:color/background_light">
 
     <ImageView
-        android:id="@+id/imageViewAppLogo"
+        android:id="@+id/app_Logo"
         android:layout_width="wrap_content"
         android:layout_height="150dp"
         android:layout_centerHorizontal="true"
@@ -15,10 +15,10 @@
         android:layout_marginTop="32dp" />
 
     <TextView
-        android:id="@+id/textViewWelcome"
+        android:id="@+id/textView_Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/imageViewAppLogo"
+        android:layout_below="@id/app_Logo"
         android:layout_centerHorizontal="true"
         android:text="@string/welcome_message"
         android:textSize="24sp"
@@ -27,10 +27,10 @@
         android:layout_marginTop="24dp" />
 
     <TextView
-        android:id="@+id/textViewDescription"
+        android:id="@+id/textView_Description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/textViewWelcome"
+        android:layout_below="@id/textView_Title"
         android:text="@string/app_description"
         android:textSize="18sp"
         android:textColor="@android:color/black"
@@ -40,7 +40,7 @@
         android:id="@+id/buttonContinue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/textViewDescription"
+        android:layout_below="@id/textView_Description"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="32dp"
         android:text="@string/continue_button"
