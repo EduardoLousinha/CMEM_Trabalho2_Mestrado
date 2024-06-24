@@ -1,4 +1,4 @@
-package intro.android.goncalo_quesado
+package intro.android.eduardo_lousinha
 
 import android.content.Intent
 import android.os.Bundle

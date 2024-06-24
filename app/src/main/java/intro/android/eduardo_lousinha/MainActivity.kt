@@ -1,4 +1,4 @@
-package intro.android.goncalo_quesado
+package intro.android.eduardo_lousinha
 
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -9,7 +9,7 @@ import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import intro.android.goncalo_quesado.databinding.ActivityMainBinding
+import intro.android.eduardo_lousinha.databinding.ActivityMainBinding
 import com.google.mlkit.vision.barcode.common.Barcode
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -19,7 +19,6 @@ import android.net.Uri
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
 
@@ -32,7 +31,11 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     private lateinit var sensorManager: SensorManager
     private var stepSensor: Sensor? = null
     private var stepCount: Int = 0
-    private var stepGoal: Int = 0
+    private var stepGoal: Int = 15
+    private var distCount: Int = 0
+    private var distGoal: Int = 13
+    private var stepLength: Int = 90
+
 
     private lateinit var sharedPreferences: SharedPreferences
     private val stepCountKey = "step_count"
@@ -102,6 +105,10 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
                 }
             }
         })
+
+        binding.buttonClearStepCount.setOnClickListener {
+            clearStepCount()
+        }
 
     }
 
@@ -189,7 +196,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         val textViewStepCount = findViewById<TextView>(R.id.textViewStepCount)
         textViewStepCount.text = "Steps: $stepCount / $stepGoal steps (goal)"
 
-
+        updateStepGoalUI()
 
         // Atualizar a cor do texto com base na meta
         if (stepCount >= stepGoal) {
@@ -204,25 +211,11 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         textViewStepCount.text = "Steps: $stepCount / $stepGoal steps (goal)"
 
         val progressPercentage = (stepCount.toFloat() / stepGoal.toFloat()) * 100
-        val imageViewGoalStatus = findViewById<ImageView>(R.id.imageViewGoalStatus)
+        val textViewGoalStatus = findViewById<TextView>(R.id.textViewGoalStatus)
 
-        when {
-            progressPercentage >= 100 -> {
-                imageViewGoalStatus.setImageResource(R.drawable.done)
-            }
-            progressPercentage >= 75 -> {
-                imageViewGoalStatus.setImageResource(R.drawable.far_75)
-            }
-            progressPercentage >= 50 -> {
-                imageViewGoalStatus.setImageResource(R.drawable.far_50)
-            }
-            progressPercentage >= 25 -> {
-                imageViewGoalStatus.setImageResource(R.drawable.far_25)
-            }
-            progressPercentage >= 0 -> {
-                imageViewGoalStatus.setImageResource(R.drawable.far)
-            }
-        }
+        val progress = stepCount.toFloat() / stepGoal.toFloat() * 100
+
+        textViewGoalStatus.text = "Progress: %.2f%%".format(progress)
 
 
         // Atualizar a cor do texto com base na meta
@@ -231,6 +224,19 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         } else {
             textViewStepCount.setTextColor(ContextCompat.getColor(this, android.R.color.black))
         }
+    }
+
+    private fun clearStepCount() {
+        stepCount = 0
+        saveStepCount(stepCount)
+        updateStepCount(stepCount)
+        updateStepGoalUI()
+    }
+
+    private fun saveStepCount(count: Int) {
+        val editor = sharedPreferences.edit()
+        editor.putInt(stepCountKey, count)
+        editor.apply()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

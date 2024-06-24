@@ -1,4 +1,4 @@
-package intro.android.goncalo_quesado
+package intro.android.eduardo_lousinha
 
 import android.content.Context
 import android.content.Intent
@@ -19,7 +19,7 @@ import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
-import intro.android.goncalo_quesado.databinding.ActivityScannerBinding
+import intro.android.eduardo_lousinha.databinding.ActivityScannerBinding
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Executors
 

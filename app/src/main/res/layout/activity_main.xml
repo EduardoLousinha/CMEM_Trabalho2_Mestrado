@@ -50,23 +50,28 @@
             android:layout_height="wrap_content"
             android:text="content" />
 
-
     </LinearLayout>
 
-
+    <Button
+        android:id="@+id/button_clear_step_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Clear Steps"
+        app:layout_constraintTop_toBottomOf="@+id/step_count_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <LinearLayout
         android:id="@+id/step_count_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="200dp"
+        android:layout_marginTop="100dp"
         android:orientation="vertical"
         android:padding="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
 
         <TextView
             android:id="@+id/textViewStepCount"
@@ -83,7 +88,6 @@
             android:layout_marginTop="16dp"
             android:hint="Set Step Goal"
             android:inputType="number" />
-
     </LinearLayout>
 
     <Button
@@ -96,16 +100,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <ImageView
-        android:id="@+id/imageViewGoalStatus"
-        android:layout_width="186dp"
-        android:layout_height="158dp"
-        android:layout_marginTop="16dp"
-        android:src="@drawable/far"
+    <TextView
+        android:id="@+id/textViewGoalStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80px"
+        android:text="Progress: 0%"
+        android:textSize="100px"
+        app:layout_constraintBottom_toTopOf="@id/step_count_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.457"
         app:layout_constraintStart_toStartOf="parent"
         tools:ignore="MissingConstraints" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

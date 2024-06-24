@@ -7,10 +7,10 @@
 
     <ImageView
         android:id="@+id/imageViewAppLogo"
-        android:layout_width="150dp"
+        android:layout_width="wrap_content"
         android:layout_height="150dp"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/run"
+        android:src="@drawable/walk"
         android:contentDescription="@string/app_logo_description"
         android:layout_marginTop="32dp" />
 

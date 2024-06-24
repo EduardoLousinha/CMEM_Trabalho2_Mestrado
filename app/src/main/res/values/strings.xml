@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">Health App</string>
-    <string name="welcome_message">Welcome to Running Care!</string>
+    <string name="app_name">The Walking App</string>
+    <string name="welcome_message">Welcome to the Walking App!</string>
     <string name="app_description">This app helps you track your steps and scan QR Codes to access health-related information.</string>
     <string name="continue_button">Continue</string>
     <string name="app_logo_description">App Logo</string>

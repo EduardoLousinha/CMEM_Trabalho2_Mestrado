@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "intro.android.goncalo_quesado"
+    namespace = "intro.android.eduardo_lousinha"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "intro.android.goncalo_quesado"
+        applicationId = "intro.android.eduardo_lousinha"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
